@@ -11,7 +11,6 @@ type userHandler struct {
 	service user.Service
 }
 
-//hola mundo
 func (c *userHandler) CreateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var formattedBody domain.User
@@ -26,6 +25,24 @@ func (c *userHandler) CreateUser() gin.HandlerFunc {
 			web.Error(ctx, 400, err.Error())
 			return
 		}
+		web.Success(ctx, 200, user)
+
+	}
+}
+
+func (c *userHandler) GetUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// id := ctx.Query("id")
+		// fmt.Println(id)
+		// fmt.Println("adsdsadsa")
+		id := ctx.Param("id")
+		user, err := c.service.GetUser(ctx, id)
+
+		if err != nil {
+			web.Error(ctx, 400, err.Error())
+			return
+		}
+
 		web.Success(ctx, 200, user)
 
 	}

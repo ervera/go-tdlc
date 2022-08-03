@@ -9,6 +9,7 @@ import (
 
 type Service interface {
 	CreateUser(ctx context.Context, user domain.User) (domain.User, error)
+	GetUser(ctx context.Context, id string) (domain.User, error)
 }
 
 type service struct {
@@ -37,7 +38,15 @@ func (s *service) CreateUser(ctx context.Context, user domain.User) (domain.User
 	if !status {
 		return domain.User{}, errors.New("No se ha logrado registrar el usuario" + err.Error())
 	}
+	user.Password = ""
+	return user, nil
+}
 
+func (s *service) GetUser(ctx context.Context, id string) (domain.User, error) {
+	user, err := s.repository.Get(ctx, id)
+	if err != nil {
+		return domain.User{}, err
+	}
 	return user, nil
 }
 

@@ -14,6 +14,7 @@ import (
 type Repository interface {
 	Save(ctx context.Context, user domain.User) (string, bool, error)
 	Exists(ctx context.Context, email string) (domain.User, bool, string)
+	Get(ctx context.Context, ID string) (domain.User, error)
 }
 
 type repository struct {
@@ -61,4 +62,27 @@ func (r *repository) Exists(ctx context.Context, email string) (domain.User, boo
 		return resultado, false, ID
 	}
 	return resultado, true, ID
+}
+
+func (r *repository) Get(ctx context.Context, ID string) (domain.User, error) {
+	localCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	db := r.db.Database("tdlc")
+	col := db.Collection("users")
+	var user domain.User
+
+	objID, _ := primitive.ObjectIDFromHex(ID)
+
+	condicion := bson.M{
+		"_id": objID,
+	}
+
+	err := col.FindOne(localCtx, condicion).Decode(&user)
+	user.Password = ""
+
+	if err != nil {
+		return user, err
+	}
+	return user, nil
 }
