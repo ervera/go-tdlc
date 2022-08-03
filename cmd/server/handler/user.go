@@ -11,6 +11,7 @@ type userHandler struct {
 	service user.Service
 }
 
+//hola mundo
 func (c *userHandler) CreateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var formattedBody domain.User
