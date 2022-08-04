@@ -14,7 +14,8 @@ import (
 type Repository interface {
 	Save(ctx context.Context, user domain.User) (string, bool, error)
 	Exists(ctx context.Context, email string) (domain.User, bool, string)
-	Get(ctx context.Context, ID string) (domain.User, error)
+	GetOne(ctx context.Context, ID string) (domain.User, error)
+	UpdateSelf(ctx context.Context, u domain.User, ID string) error
 }
 
 type repository struct {
@@ -64,7 +65,7 @@ func (r *repository) Exists(ctx context.Context, email string) (domain.User, boo
 	return resultado, true, ID
 }
 
-func (r *repository) Get(ctx context.Context, ID string) (domain.User, error) {
+func (r *repository) GetOne(ctx context.Context, ID string) (domain.User, error) {
 	localCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -85,4 +86,41 @@ func (r *repository) Get(ctx context.Context, ID string) (domain.User, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+func (r *repository) UpdateSelf(ctx context.Context, u domain.User, ID string) error {
+	localCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	db := r.db.Database("tdlc")
+	col := db.Collection("users")
+	registro := make(map[string]interface{})
+	if len(u.Nombre) > 0 {
+		registro["nombre"] = u.Nombre
+	}
+	if len(u.Apellido) > 0 {
+		registro["apellido"] = u.Apellido
+	}
+	registro["fechaNacimiento"] = u.FechaNacimiento
+	if len(u.Banner) > 0 {
+		registro["banner"] = u.Banner
+	}
+	if len(u.Biografia) > 0 {
+		registro["biografia"] = u.Biografia
+	}
+	if len(u.Ubicacion) > 0 {
+		registro["ubicacion"] = u.Ubicacion
+	}
+	if len(u.SitioWeb) > 0 {
+		registro["sitioWeb"] = u.SitioWeb
+	}
+	updString := bson.M{
+		"$set": registro,
+	}
+
+	objID, _ := primitive.ObjectIDFromHex(ID)
+	filtro := bson.M{"_id": bson.M{"$eq": objID}}
+
+	_, err := col.UpdateOne(localCtx, filtro, updString)
+	return err
 }

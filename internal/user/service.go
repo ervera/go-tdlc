@@ -9,7 +9,8 @@ import (
 
 type Service interface {
 	CreateUser(ctx context.Context, user domain.User) (domain.User, error)
-	GetUser(ctx context.Context, id string) (domain.User, error)
+	GetUserById(ctx context.Context, id string) (domain.User, error)
+	UpdateSelf(ctx context.Context, u domain.User, id string) error
 }
 
 type service struct {
@@ -42,12 +43,16 @@ func (s *service) CreateUser(ctx context.Context, user domain.User) (domain.User
 	return user, nil
 }
 
-func (s *service) GetUser(ctx context.Context, id string) (domain.User, error) {
-	user, err := s.repository.Get(ctx, id)
+func (s *service) GetUserById(ctx context.Context, id string) (domain.User, error) {
+	user, err := s.repository.GetOne(ctx, id)
 	if err != nil {
 		return domain.User{}, err
 	}
 	return user, nil
+}
+
+func (s *service) UpdateSelf(ctx context.Context, u domain.User, id string) error {
+	return s.repository.UpdateSelf(ctx, u, id)
 }
 
 func NewService(r Repository) Service {

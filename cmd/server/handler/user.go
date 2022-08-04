@@ -36,8 +36,25 @@ func (c *userHandler) GetUser() gin.HandlerFunc {
 		// fmt.Println(id)
 		// fmt.Println("adsdsadsa")
 		id := ctx.Param("id")
-		user, err := c.service.GetUser(ctx, id)
+		user, err := c.service.GetUserById(ctx, id)
 
+		if err != nil {
+			web.Error(ctx, 400, err.Error())
+			return
+		}
+
+		web.Success(ctx, 200, user)
+
+	}
+}
+
+func (c *userHandler) UpdateSelfUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var user domain.User
+		err := ctx.ShouldBindJSON(&user)
+
+		c.service.UpdateSelf(ctx, user, UserID)
+		//TODO : asdasddasdasdsadasdasdasdsaasd Ese userId es el q viene del token,  hay que ver que hacer con eso.
 		if err != nil {
 			web.Error(ctx, 400, err.Error())
 			return

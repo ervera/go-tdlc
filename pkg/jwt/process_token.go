@@ -8,8 +8,8 @@ import (
 	"github.com/ervera/tdlc-gin/internal/domain"
 )
 
+var UserID string
 var Email string
-var Username string
 
 func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
 	//func ProcessToken(ctx context.Context, db *sql.DB, tk string) (*domain.Claim, bool, string, error) {
@@ -36,6 +36,8 @@ func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
 
 		return claims, finded, ID, nil*/
 		/***** SIRVE PARA VALIDAR BUSCANDO EN LA BD ****/
+		Email = claims.Email
+		UserID = claims.Id
 		return claims, true, ID, nil
 	}
 	if !tkn.Valid {
