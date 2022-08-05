@@ -3,7 +3,9 @@ package routes
 import (
 	"github.com/ervera/tdlc-gin/cmd/server/handler"
 	"github.com/ervera/tdlc-gin/internal/login"
+	"github.com/ervera/tdlc-gin/internal/tweet"
 	"github.com/ervera/tdlc-gin/internal/user"
+	"github.com/ervera/tdlc-gin/pkg/middleware"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -22,6 +24,7 @@ func (r *router) MapRoutes() {
 	r.setGroup()
 	r.buildUserRoutes()
 	r.buildLoginRoutes()
+	r.buildTweetRoutes()
 }
 
 func (r *router) setGroup() {
@@ -34,8 +37,17 @@ func (r *router) buildUserRoutes() {
 	user := handler.NewHandlerUser(serviceUsers)
 	group := r.rg.Group("/user")
 	group.POST("/", user.CreateUser())
-	group.GET("/:id", user.GetUser())
+	group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
+	group.PATCH("/", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
 	//group.GET("/", user.GetUser())
+}
+
+func (r *router) buildTweetRoutes() {
+	repoUsers := tweet.NewRepository(r.db)
+	serviceUsers := tweet.NewService(repoUsers)
+	user := handler.NewHandlerTweet(serviceUsers)
+	group := r.rg.Group("/tweet")
+	group.POST("/", middleware.TokenAuthMiddleware(), user.CreateTweet())
 }
 
 func (r *router) buildLoginRoutes() {

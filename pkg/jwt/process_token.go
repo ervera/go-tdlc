@@ -15,7 +15,7 @@ func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
 	//func ProcessToken(ctx context.Context, db *sql.DB, tk string) (*domain.Claim, bool, string, error) {
 	ID := ""
 
-	myPass := []byte("generate_random_pass")
+	myPass := []byte("generate")
 	claims := &domain.Claim{}
 	splitToken := strings.Split(tk, "Bearer")
 	if len(splitToken) != 2 {
@@ -37,7 +37,7 @@ func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
 		return claims, finded, ID, nil*/
 		/***** SIRVE PARA VALIDAR BUSCANDO EN LA BD ****/
 		Email = claims.Email
-		UserID = claims.Id
+		UserID = claims.ID.Hex()
 		return claims, true, ID, nil
 	}
 	if !tkn.Valid {

@@ -17,6 +17,12 @@ type service struct {
 	repository Repository
 }
 
+func NewService(r Repository) Service {
+	return &service{
+		repository: r,
+	}
+}
+
 func (s *service) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
 	if len(user.Email) < 3 {
 		return domain.User{}, errors.New("email invalido")
@@ -53,10 +59,4 @@ func (s *service) GetUserById(ctx context.Context, id string) (domain.User, erro
 
 func (s *service) UpdateSelf(ctx context.Context, u domain.User, id string) error {
 	return s.repository.UpdateSelf(ctx, u, id)
-}
-
-func NewService(r Repository) Service {
-	return &service{
-		repository: r,
-	}
 }
