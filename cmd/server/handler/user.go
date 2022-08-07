@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/ervera/tdlc-gin/internal/domain"
 	"github.com/ervera/tdlc-gin/internal/user"
 	"github.com/ervera/tdlc-gin/pkg/jwt"
@@ -60,11 +58,6 @@ func (c *userHandler) UpdateSelfUser() gin.HandlerFunc {
 			return
 		}
 		err = c.service.UpdateSelf(ctx, user, jwt.UserID)
-		fmt.Println(err)
-		fmt.Println(err)
-		fmt.Println(err)
-		fmt.Println(err)
-		//TODO : asdasddasdasdsadasdasdasdsaasd Ese userId es el q viene del token,  hay que ver que hacer con eso.
 		if err != nil {
 			web.Error(ctx, 400, err.Error())
 			return

@@ -36,6 +36,7 @@ func (r *router) buildUserRoutes() {
 	serviceUsers := user.NewService(repoUsers)
 	user := handler.NewHandlerUser(serviceUsers)
 	group := r.rg.Group("/user")
+
 	group.POST("/", user.CreateUser())
 	group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
 	group.PATCH("/", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
@@ -47,7 +48,10 @@ func (r *router) buildTweetRoutes() {
 	serviceUsers := tweet.NewService(repoUsers)
 	user := handler.NewHandlerTweet(serviceUsers)
 	group := r.rg.Group("/tweet")
+
 	group.POST("/", middleware.TokenAuthMiddleware(), user.CreateTweet())
+	group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetTweetsByUserId())
+	group.DELETE("/:id", middleware.TokenAuthMiddleware(), user.DeleteTweetsById())
 }
 
 func (r *router) buildLoginRoutes() {
@@ -55,6 +59,7 @@ func (r *router) buildLoginRoutes() {
 	serviceLogin := login.NewService(repoUsers)
 	login := handler.NewLogin(serviceLogin)
 	group := r.rg.Group("/login")
+
 	group.POST("/", login.Login())
 }
 
