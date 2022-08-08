@@ -17,7 +17,7 @@ func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
 
 	myPass := []byte("generate")
 	claims := &domain.Claim{}
-	splitToken := strings.Split(tk, "Bearer")
+	splitToken := strings.Split(tk, "Bearer ")
 	if len(splitToken) != 2 {
 		return claims, false, "", errors.New("error token split")
 	}

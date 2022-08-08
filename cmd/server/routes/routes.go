@@ -40,6 +40,8 @@ func (r *router) buildUserRoutes() {
 	group.POST("/", user.CreateUser())
 	group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
 	group.PATCH("/", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
+	group.POST("/image/:type", middleware.TokenAuthMiddleware(), user.UploadUserImage())
+	group.POST("/abc", user.ABC())
 	//group.GET("/", user.GetUser())
 }
 

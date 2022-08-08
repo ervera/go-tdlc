@@ -105,6 +105,9 @@ func (r *repository) UpdateSelf(ctx context.Context, u domain.User, ID string) e
 	if len(u.Banner) > 0 {
 		registro["banner"] = u.Banner
 	}
+	if len(u.Avatar) > 0 {
+		registro["avatar"] = u.Avatar
+	}
 	if len(u.Biografia) > 0 {
 		registro["biografia"] = u.Biografia
 	}
