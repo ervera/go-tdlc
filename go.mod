@@ -2,10 +2,12 @@ module github.com/ervera/tdlc-gin
 
 go 1.18
 
-require go.mongodb.org/mongo-driver v1.10.0
+require (
+	github.com/cloudinary/cloudinary-go/v2 v2.1.0
+	go.mongodb.org/mongo-driver v1.10.0
+)
 
 require (
-	github.com/cloudinary/cloudinary-go/v2 v2.1.0 // indirect
 	github.com/creasty/defaults v1.6.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -28,7 +30,6 @@ require (
 )
 
 require (
-	github.com/cloudinary/cloudinary-go v1.7.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang/snappy v0.0.1 // indirect

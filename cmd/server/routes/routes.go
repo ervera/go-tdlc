@@ -25,6 +25,7 @@ func (r *router) MapRoutes() {
 	r.buildUserRoutes()
 	r.buildLoginRoutes()
 	r.buildTweetRoutes()
+	r.buildImageRoutes()
 }
 
 func (r *router) setGroup() {
@@ -40,9 +41,19 @@ func (r *router) buildUserRoutes() {
 	group.POST("/", user.CreateUser())
 	group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
 	group.PATCH("/", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
-	group.POST("/image/:type", middleware.TokenAuthMiddleware(), user.UploadUserImage())
-	group.POST("/abc", user.ABC())
+	//group.POST("/image/:type", middleware.TokenAuthMiddleware(), user.UploadUserImage())
+	//group.POST("/abc", user.ABC())
 	//group.GET("/", user.GetUser())
+}
+
+func (r *router) buildImageRoutes() {
+	repoUsers := user.NewRepository(r.db)
+	serviceUsers := user.NewService(repoUsers)
+	user := handler.NewImageHandler(serviceUsers)
+	group := r.rg.Group("/image")
+
+	group.POST("/:type", middleware.TokenAuthMiddleware(), user.UploadUserImage())
+	group.DELETE("/:type", middleware.TokenAuthMiddleware(), user.DeleteUserImage())
 }
 
 func (r *router) buildTweetRoutes() {

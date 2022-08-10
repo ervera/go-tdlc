@@ -10,7 +10,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		_, _, _, err := jwt.ProcessToken(ctx.GetHeader("Authorization"))
 		if err != nil {
-			web.Error(ctx, 400, err.Error())
+			web.Error(ctx, 400, "token vencido"+err.Error())
 			return
 		}
 		ctx.Next()
