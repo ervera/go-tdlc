@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -15,7 +14,7 @@ func NewConnection() *sql.DB {
 	// Open inicia un pool de conexiones. Sólo abrir una vez
 	var err error
 	// SIN EL var err error, no funciona.
-	dataSource := os.Getenv("DATA_SOURCE")
+	dataSource := "postgres://pwvhgatecfevnn:2fd1a4fd5a04c4a8fe659816c1a75d3e2d74d43da53e0efa8157916abaa0953e@ec2-34-199-68-114.compute-1.amazonaws.com:5432/d9p1i6md4jhb75"
 	StorageDB, err := sql.Open("postgres", dataSource)
 	if err != nil {
 		panic(err)
@@ -23,10 +22,6 @@ func NewConnection() *sql.DB {
 	if err = StorageDB.Ping(); err != nil {
 		panic(err)
 	}
-	// asd, _ := StorageDB.Query("select * from users")
-	// fmt.Println(asd.Columns())
-	// fmt.Println("dasdsa")
-	// log.Println("database Configured")
 	return StorageDB
 }
 
