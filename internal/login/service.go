@@ -2,6 +2,7 @@ package login
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
 	"github.com/ervera/tdlc-gin/internal/user"
@@ -24,6 +25,7 @@ func (s *service) Login(ctx context.Context, email string, password string) (dom
 	passwordBytes := []byte(password)
 	passwordBD := []byte(usu.Password)
 	err = bcrypt.CompareHashAndPassword(passwordBD, passwordBytes)
+	fmt.Println(usu)
 	usu.Password = ""
 	if err != nil {
 		return usu, err

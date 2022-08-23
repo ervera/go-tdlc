@@ -48,7 +48,6 @@ func (r *repository) ExistAndGetByMail(ctx context.Context, email string) (domai
 	if err != nil {
 		return u, err
 	}
-	u.Password = ""
 	return u, nil
 }
 
