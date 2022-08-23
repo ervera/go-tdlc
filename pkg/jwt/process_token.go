@@ -6,9 +6,10 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ervera/tdlc-gin/internal/domain"
+	"github.com/google/uuid"
 )
 
-var UserID string
+var UserID uuid.UUID
 var Email string
 
 func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
@@ -37,7 +38,8 @@ func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
 		return claims, finded, ID, nil*/
 		/***** SIRVE PARA VALIDAR BUSCANDO EN LA BD ****/
 		Email = claims.Email
-		UserID = claims.ID.Hex()
+		UserID = uuid.Must(uuid.Parse(claims.ID))
+		//guid := uuid.Must(uuid.Parse(ctx.Param("id")))
 		return claims, true, ID, nil
 	}
 	if !tkn.Valid {

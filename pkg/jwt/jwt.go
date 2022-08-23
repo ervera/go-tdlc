@@ -11,15 +11,15 @@ func GenerateJWT(u domain.User) (string, error) {
 	miClave := []byte("generate")
 
 	payLoad := jwt.MapClaims{
-		"email":            u.Email,
-		"nombre":           u.Nombre,
-		"apellidos":        u.Apellido,
-		"fecha_nacimiento": u.FechaNacimiento,
-		"biografia":        u.Biografia,
-		"ubicacion":        u.Ubicacion,
-		"sitioweb":         u.SitioWeb,
-		"_id":              u.ID.Hex(),
-		"exp":              time.Now().Add(time.Hour * 24).Unix(),
+		"email":      u.Email,
+		"first_name": u.FirstName,
+		"last_name":  u.LastName,
+		"created_on": u.CreatedOn,
+		"biography":  u.Biography,
+		"location":   u.Location,
+		"website":    u.Website,
+		"id":         u.ID,
+		"exp":        time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payLoad)
 	tokenStr, err := token.SignedString(miClave)

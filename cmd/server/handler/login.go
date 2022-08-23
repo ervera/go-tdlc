@@ -16,8 +16,7 @@ type LoginHandler struct {
 
 func (c *LoginHandler) Login() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		ctx.Writer.Header().Add("content-type", "application/json")
+		//ctx.Writer.Header().Add("content-type", "application/json")
 		var u domain.User
 		err := ctx.ShouldBindJSON(&u)
 		if err != nil {
@@ -28,8 +27,8 @@ func (c *LoginHandler) Login() gin.HandlerFunc {
 			web.Error(ctx, 400, "el email del usuario es requereido")
 			return
 		}
-		user, existe := c.service.Login(ctx, u.Email, u.Password)
-		if !existe {
+		user, err := c.service.Login(ctx, u.Email, u.Password)
+		if err != nil {
 			web.Error(ctx, 400, "usuario y/o contraseña invalido")
 			return
 		}

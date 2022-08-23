@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
-	"github.com/ervera/tdlc-gin/pkg/jwt"
 )
 
 type Service interface {
@@ -27,8 +26,8 @@ func NewService(r Repository) Service {
 func (s *service) Save(ctx context.Context, message string) (domain.Tweet, error) {
 	tweet := domain.Tweet{
 		Mensaje: message,
-		UserID:  jwt.UserID,
-		Fecha:   time.Now(),
+		//UserID:  jwt.UserID,
+		Fecha: time.Now(),
 	}
 
 	result, err := s.repository.Save(ctx, tweet)
@@ -45,6 +44,6 @@ func (s *service) GetAllByUserId(ctx context.Context, ID string, page int64) ([]
 }
 
 func (s *service) DeleteOneById(ctx context.Context, ID string) error {
-
-	return s.repository.DeleteOne(ctx, ID, jwt.UserID)
+	return nil
+	//return s.repository.DeleteOne(ctx, ID, jwt.UserID)
 }

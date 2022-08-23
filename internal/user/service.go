@@ -5,12 +5,15 @@ import (
 	"errors"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
+	"github.com/ervera/tdlc-gin/pkg/jwt"
+	"github.com/google/uuid"
 )
 
 type Service interface {
 	CreateUser(ctx context.Context, user domain.User) (domain.User, error)
-	GetUserById(ctx context.Context, id string) (domain.User, error)
-	UpdateSelf(ctx context.Context, u domain.User, id string) error
+	GetById(ctx context.Context, guid uuid.UUID) (domain.User, error)
+	Update(ctx context.Context, u domain.User) error
+	// SaveUserRelation(ctx context.Context, userRelationId string) error
 }
 
 type service struct {
@@ -28,35 +31,46 @@ func (s *service) CreateUser(ctx context.Context, user domain.User) (domain.User
 		return domain.User{}, errors.New("email invalido")
 	}
 
-	if len(user.Email) < 5 {
-		return domain.User{}, errors.New("password debe tener al menos 6 caracteres")
+	if len(user.Email) < 6 {
+		return domain.User{}, errors.New("password debe tener al menos 5 caracteres")
 	}
 
-	_, encontrado, _ := s.repository.Exists(ctx, user.Email)
-	if encontrado {
-		return domain.User{}, errors.New("el mail ingresado ya existe")
-	}
+	// encontrado := s.repository.Exist(ctx, user.Email)
+	// if encontrado {
+	// 	return domain.User{}, errors.New("el mail ingresado ya existe")
+	// }
 
-	_, status, err := s.repository.Save(ctx, user)
+	user, err := s.repository.Save(ctx, user)
 	if err != nil {
 		return domain.User{}, errors.New("Ocurrio un error al registrar un usuario" + err.Error())
 	}
-
-	if !status {
-		return domain.User{}, errors.New("No se ha logrado registrar el usuario" + err.Error())
-	}
-	user.Password = ""
 	return user, nil
 }
 
-func (s *service) GetUserById(ctx context.Context, id string) (domain.User, error) {
-	user, err := s.repository.GetOne(ctx, id)
+func (s *service) GetById(ctx context.Context, ID uuid.UUID) (domain.User, error) {
+	user, err := s.repository.GetById(ctx, ID)
 	if err != nil {
-		return domain.User{}, err
+		return user, err
 	}
 	return user, nil
 }
 
-func (s *service) UpdateSelf(ctx context.Context, u domain.User, id string) error {
-	return s.repository.UpdateSelf(ctx, u, id)
+func (s *service) Update(ctx context.Context, u domain.User) error {
+	if jwt.UserID != u.ID {
+		return errors.New("userId and token not match")
+	}
+	return s.repository.Update(ctx, u)
 }
+
+// func (s *service) SaveUserRelation(ctx context.Context, userRelationId string) error {
+// 	userRelation := domain.UserRelation{UserID: jwt.UserID, UserRelationId: userRelationId}
+
+// 	user, err := s.repository.GetOne(ctx, userRelationId)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if user.Email == "" {
+// 		return errors.New("el usuario ingresado no existe")
+// 	}
+// 	return s.repository.SaveUserRelation(ctx, userRelation)
+// }

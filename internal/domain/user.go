@@ -1,24 +1,24 @@
 package domain
 
 import (
-	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/ervera/tdlc-gin/pkg/iso8601"
+	"github.com/google/uuid"
 )
 
 type User struct {
-	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Nombre          string             `bson:"nombre" json:"nombre,omitempty"`
-	Apellido        string             `bson:"apellido" json:"apellido,omitempty"`
-	FechaNacimiento time.Time          `bson:"fechaNacimiento" json:"fechaNacimiento,omitempty"`
-	Email           string             `bson:"email" json:"email"`
-	Password        string             `bson:"password" json:"password,omitempty"`
-	Avatar          UserImage          `bson:"avatar" json:"avatar,omitempty"`
-	Banner          UserImage          `bson:"banner" json:"banner,omitempty"`
-	Biografia       string             `bson:"biografia" json:"biografia,omitempty"`
-	Ubicacion       string             `bson:"ubicacion" json:"ubicacion,omitempty"`
-	SitioWeb        string             `bson:"sitioweb" json:"sitioweb,omitempty"`
-	Token           string             `json:"token,omitempty"`
+	//ID        int64         `json:"id,omitempty"`
+	ID        uuid.UUID     `json:"id,omitempty"`
+	FirstName string        `json:"first_name,omitempty"`
+	LastName  string        `json:"last_name,omitempty"`
+	Password  string        `json:"password,omitempty"`
+	Email     string        `json:"email,omitempty" `
+	CreatedOn iso8601.ITime `json:"created_on,omitempty"`
+	Avatar    string        `json:"avatar,omitempty"`
+	Banner    string        `json:"banner,omitempty"`
+	Biography string        `json:"biography,omitempty"`
+	Location  string        `json:"location,omitempty"`
+	Website   string        `json:"website,omitempty"`
+	Token     string        `json:"token,omitempty"`
 }
 
 type UserImage struct {

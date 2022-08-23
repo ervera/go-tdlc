@@ -1,10 +1,10 @@
 package handler
 
-const (
-	cloudname        = "dangvuvyq"
-	cloudapikey      = "754218821349648"
-	cloudinarysecret = "rjiWDoS5G0yNdiY4NZkEXtvit8k"
-)
+// const (
+// 	cloudname        = "dangvuvyq"
+// 	cloudapikey      = "754218821349648"
+// 	cloudinarysecret = "rjiWDoS5G0yNdiY4NZkEXtvit8k"
+// )
 
 // func (c *userHandler) ABC() gin.HandlerFunc {
 // 	return func(ctx *gin.Context) {

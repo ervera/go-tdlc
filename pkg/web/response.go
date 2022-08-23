@@ -28,6 +28,18 @@ func Success(c *gin.Context, status int, data interface{}) {
 
 // NewErrorf creates a new error with the given status code and the message
 // formatted according to args and format.
+// func Error(c *gin.Context, status int, format string, args ...interface{}) {
+// 	err := errorResponse{
+// 		Code:    strings.ReplaceAll(strings.ToLower(http.StatusText(status)), " ", "_"),
+// 		Message: fmt.Sprintf(format, args...),
+// 		Status:  status,
+// 	}
+
+// 	Response(c, status, err)
+// }
+
+// // NewErrorf creates a new error with the given status code and the message
+// // formatted according to args and format.
 func Error(c *gin.Context, status int, format string, args ...interface{}) {
 	err := errorResponse{
 		Code:    strings.ReplaceAll(strings.ToLower(http.StatusText(status)), " ", "_"),
