@@ -1,0 +1,25 @@
+{
+    "asset_id": "1eb1aa1c7fd7f8a38941eaa9a771cd43",
+    "public_id": "wh2hxv01ov50kh9zfqet",
+    "version": 1661366130,
+    "version_id": "1aca07ea2d2c100fd16fbaf3ef293b41",
+    "signature": "46beb38fce639bd20c7ebc0d06a506cd1d28f0cb",
+    "width": 721,
+    "height": 1080,
+    "format": "jpg",
+    "resource_type": "image",
+    "created_at": "2022-08-24T18:35:30Z",
+    "bytes": 68118,
+    "type": "upload",
+    "etag": "aef7b938d0c7883f5f8726ca93021f8b",
+    "url": "http://res.cloudinary.com/dangvuvyq/image/upload/v1661366130/wh2hxv01ov50kh9zfqet.jpg",
+    "secure_url": "https://res.cloudinary.com/dangvuvyq/image/upload/v1661366130/wh2hxv01ov50kh9zfqet.jpg",
+    "access_mode": "",
+    "overwritten": false,
+    "original_filename": "file",
+    "eager": null,
+    "responsive_breakpoints": null,
+    "error": {
+        "message": ""
+    }
+}

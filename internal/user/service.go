@@ -3,8 +3,10 @@ package user
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
+	"github.com/ervera/tdlc-gin/pkg/iso8601"
 	"github.com/ervera/tdlc-gin/pkg/jwt"
 	"github.com/google/uuid"
 )
@@ -35,14 +37,14 @@ func (s *service) CreateUser(ctx context.Context, user domain.User) (domain.User
 		return domain.User{}, errors.New("password debe tener al menos 5 caracteres")
 	}
 
-	// encontrado := s.repository.Exist(ctx, user.Email)
-	// if encontrado {
-	// 	return domain.User{}, errors.New("el mail ingresado ya existe")
-	// }
+	user.CreatedOn = iso8601.NowTime()
 
 	user, err := s.repository.Save(ctx, user)
 	if err != nil {
-		return domain.User{}, errors.New("Ocurrio un error al registrar un usuario" + err.Error())
+		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+			return domain.User{}, errors.New("email ingresado ya existe")
+		}
+		return domain.User{}, errors.New("Ocurrio un error al registrar un usuario: " + err.Error())
 	}
 	return user, nil
 }

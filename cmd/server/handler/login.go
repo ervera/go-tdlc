@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/ervera/tdlc-gin/internal/domain"
 	"github.com/ervera/tdlc-gin/internal/login"
 	"github.com/ervera/tdlc-gin/pkg/jwt"
@@ -39,8 +37,7 @@ func (c *LoginHandler) Login() gin.HandlerFunc {
 		}
 
 		user.Token = jwtKey
-		fmt.Println(user.Password)
-		web.Success(ctx, 200, user)
+		web.Response(ctx, 200, user)
 	}
 }
 

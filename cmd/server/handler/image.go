@@ -1,7 +1,14 @@
 package handler
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/ervera/tdlc-gin/internal/user"
+	"github.com/ervera/tdlc-gin/pkg/web"
+	"github.com/gin-gonic/gin"
 )
 
 type ImageHandler struct {
@@ -26,48 +33,49 @@ const (
 	cloudinarysecret = "rjiWDoS5G0yNdiY4NZkEXtvit8k"
 )
 
-// func (c *ImageHandler) UploadUserImage() gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		paramImage := ctx.Param("type")
-// 		file, handler, err := ctx.Request.FormFile("image")
-// 		if err != nil {
-// 			web.Error(ctx, 400, err.Error())
-// 			return
-// 		}
-// 		format := strings.Split(handler.Filename, ".")[1]
-// 		_, exist := imgType[format]
-// 		if !exist {
-// 			web.Error(ctx, 400, "image format is not correct")
-// 			return
-// 		}
-// 		cld, err := cloudinary.NewFromParams(cloudname, cloudapikey, cloudinarysecret)
-// 		if err != nil {
-// 			web.Error(ctx, 400, err.Error())
-// 			return
-// 		}
-// 		options := uploader.UploadParams{}
-// 		resp, err := cld.Upload.Upload(ctx, file, options)
-// 		if err != nil {
-// 			web.Error(ctx, 400, err.Error())
-// 			return
-// 		}
-// 		var user domain.User
-// 		if paramImage == "avatar" {
-// 			user.Avatar.ImgUrl = resp.URL
-// 			user.Avatar.PublicID = resp.PublicID
-// 		}
-// 		if paramImage == "banner" {
-// 			user.Banner.ImgUrl = resp.URL
-// 			user.Banner.PublicID = resp.PublicID
-// 		}
-// 		err = c.service.UpdateSelf(ctx, user, jwt.UserID)
-// 		if err != nil {
-// 			web.Error(ctx, 400, err.Error())
-// 			return
-// 		}
-// 		web.Success(ctx, 200, nil)
-// 	}
-// }
+func (c *ImageHandler) UploadUserImage() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		//paramImage := ctx.Param("type")
+		file, handler, err := ctx.Request.FormFile("image")
+		if err != nil {
+			web.Error(ctx, 400, err.Error())
+			return
+		}
+		format := strings.Split(handler.Filename, ".")[1]
+		_, exist := imgType[format]
+		if !exist {
+			web.Error(ctx, 400, "image format is not correct")
+			return
+		}
+		cld, err := cloudinary.NewFromParams(cloudname, cloudapikey, cloudinarysecret)
+		if err != nil {
+			web.Error(ctx, 400, err.Error())
+			return
+		}
+		options := uploader.UploadParams{}
+		resp, err := cld.Upload.Upload(ctx, file, options)
+		fmt.Println(resp)
+		if err != nil {
+			web.Error(ctx, 400, err.Error())
+			return
+		}
+		// var user domain.User
+		// if paramImage == "avatar" {
+		// 	user.Avatar.ImgUrl = resp.URL
+		// 	user.Avatar.PublicID = resp.PublicID
+		// }
+		// if paramImage == "banner" {
+		// 	user.Banner.ImgUrl = resp.URL
+		// 	user.Banner.PublicID = resp.PublicID
+		// }
+		// err = c.service.UpdateSelf(ctx, user, jwt.UserID)
+		if err != nil {
+			web.Error(ctx, 400, err.Error())
+			return
+		}
+		web.Success(ctx, 200, nil)
+	}
+}
 
 // func (c *ImageHandler) DeleteUserImage() gin.HandlerFunc {
 // 	return func(ctx *gin.Context) {

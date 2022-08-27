@@ -54,7 +54,7 @@ func (r *repository) ExistAndGetByMail(ctx context.Context, email string) (domai
 func (r *repository) Save(ctx context.Context, user domain.User) (domain.User, error) {
 	user.Password, _ = encrypt.Password(user.Password)
 	currentTime := time.Now()
-	query := "INSERT INTO users (first_name, last_name, password, email, created_on, avatar, banner, biography, location, website) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+	query := "INSERT INTO users (first_name, last_name, password, email, created_on, avatar, banner, biography, location, website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	stmt, err := r.db.Prepare(query)
 	if err != nil {
 		return domain.User{}, err
@@ -72,7 +72,7 @@ func (r *repository) Save(ctx context.Context, user domain.User) (domain.User, e
 	if rowsAffected == 0 {
 		return domain.User{}, errors.New("")
 	}
-	user.ID = uuid.Nil
+	//user.ID = uuid.Nil
 	user.Password = ""
 	return user, nil
 }

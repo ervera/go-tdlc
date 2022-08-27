@@ -2,8 +2,9 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 
-	_ "github.com/lib/pq"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // var (
@@ -14,14 +15,19 @@ func NewConnection() *sql.DB {
 	// Open inicia un pool de conexiones. Sólo abrir una vez
 	var err error
 	// SIN EL var err error, no funciona.
-	dataSource := "postgres://pwvhgatecfevnn:2fd1a4fd5a04c4a8fe659816c1a75d3e2d74d43da53e0efa8157916abaa0953e@ec2-34-199-68-114.compute-1.amazonaws.com:5432/d9p1i6md4jhb75"
-	StorageDB, err := sql.Open("postgres", dataSource)
+	// dataSource := "postgres://aofrimvubeextn:b8c9703a6ed32b362eefdba80459839a431c33903793ed4c58d2caa297fc5f31@ec2-3-214-2-141.compute-1.amazonaws.com:5432/d2cs8ep2ntrekh"
+	// StorageDB, err := sql.Open("postgres", dataSource)
+	DSN := "aklzy92giy81gwchwkbg:pscale_pw_jjFJOZZ6dck7ZNxxWEP8zMegDbvAQ8rjIWt6lIddPvv@tcp(aws-sa-east-1.connect.psdb.cloud)/evcvera?tls=true"
+	StorageDB, err := sql.Open("mysql", DSN)
 	if err != nil {
+		fmt.Println(err)
 		panic(err)
 	}
 	if err = StorageDB.Ping(); err != nil {
+		fmt.Println(err)
 		panic(err)
 	}
+	fmt.Println("Successfully connected to PlanetScale!")
 	return StorageDB
 }
 

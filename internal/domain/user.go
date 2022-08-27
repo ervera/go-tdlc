@@ -20,8 +20,3 @@ type User struct {
 	Website   string        `json:"website,omitempty"`
 	Token     string        `json:"token,omitempty"`
 }
-
-type UserImage struct {
-	PublicID string `bson:"public_id" json:"public_id,omitempty"`
-	ImgUrl   string `bson:"imgurl" json:"imgurl,omitempty"`
-}
