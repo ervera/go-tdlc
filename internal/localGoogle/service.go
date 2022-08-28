@@ -6,12 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
 	"github.com/ervera/tdlc-gin/internal/user"
 	"github.com/ervera/tdlc-gin/pkg/jwt"
+	"github.com/ervera/tdlc-gin/pkg/random"
 )
 
 type Service interface {
@@ -100,16 +100,6 @@ func googleUserToUser(g domain.GoogleUser) domain.User {
 		LastName:  g.FamilyName,
 		Avatar:    g.Picture,
 		Email:     g.Email,
-		Password:  randStringBytes(7),
+		Password:  random.GenerateStringByN(7),
 	}
-}
-
-// randStringBytes create a random string
-func randStringBytes(n int) string {
-	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = letterBytes[rand.Intn(len(letterBytes))]
-	}
-	return string(b)
 }

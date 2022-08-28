@@ -6,16 +6,14 @@ import (
 	"github.com/ervera/tdlc-gin/internal/domain"
 	"github.com/ervera/tdlc-gin/internal/media"
 	"github.com/ervera/tdlc-gin/internal/user"
-	"github.com/ervera/tdlc-gin/pkg/sendgrid"
 	"github.com/ervera/tdlc-gin/pkg/web"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type userHandler struct {
-	userService     user.Service
-	mediaService    media.Service
-	sendgridService sendgrid.Service
+	userService  user.Service
+	mediaService media.Service
 }
 
 func (c *userHandler) CreateUser() gin.HandlerFunc {
@@ -83,12 +81,25 @@ func (c *userHandler) UpdateSelfUser() gin.HandlerFunc {
 	}
 }
 
-func (c *userHandler) SendMail() gin.HandlerFunc {
+func (c *userHandler) ForgetPassword() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		c.sendgridService.SendMail()
+		email := ctx.Param("email")
+		err := c.userService.SendEmailWithPassword(ctx, email)
+		if err != nil {
+			web.Error(ctx, 400, err.Error())
+			return
+		}
 		web.Response(ctx, 200, nil)
 	}
 }
+
+// func (c *userHandler) SendMail() gin.HandlerFunc {
+// 	return func(ctx *gin.Context) {
+// 		//email := ctx.Param("email")
+// 		c.sendgridService.SendMail()
+// 		web.Response(ctx, 200, nil)
+// 	}
+// }
 
 // func (c *userHandler) CreateUserRelation() gin.HandlerFunc {
 // 	return func(ctx *gin.Context) {
@@ -102,10 +113,9 @@ func (c *userHandler) SendMail() gin.HandlerFunc {
 // 	}
 // }
 
-func NewHandlerUser(p user.Service, m media.Service, s sendgrid.Service) *userHandler {
+func NewHandlerUser(p user.Service, m media.Service) *userHandler {
 	return &userHandler{
-		userService:     p,
-		mediaService:    m,
-		sendgridService: s,
+		userService:  p,
+		mediaService: m,
 	}
 }
