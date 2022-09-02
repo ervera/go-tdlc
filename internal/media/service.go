@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"mime/multipart"
+	"os"
 	"strings"
 
 	"github.com/cloudinary/cloudinary-go"
@@ -14,6 +15,7 @@ type Service interface {
 	UploadMedia(ctx context.Context, iFile multipart.File, iHandler *multipart.FileHeader) (string, error)
 	GetPublicID(ctx context.Context, url string) (string, error)
 	DeleteMedia(ctx context.Context, url string) error
+	UploadByUrl(ctx context.Context, url string) (string, error)
 }
 
 type service struct {
@@ -21,18 +23,24 @@ type service struct {
 
 var imgType = []string{"png", "jpg", "jpeg"}
 
-// TODO : mover a .env
-const (
-	cloudname        = "dangvuvyq"
-	cloudapikey      = "754218821349648"
-	cloudinarysecret = "rjiWDoS5G0yNdiY4NZkEXtvit8k"
+var (
+	cloudname        = ""
+	cloudapikey      = ""
+	cloudinarysecret = ""
 )
 
 func NewService() Service {
 	return &service{}
 }
 
+func setKeys() {
+	cloudname = os.Getenv("CLOUD_NAME")
+	cloudapikey = os.Getenv("CLOUD_API_KEY")
+	cloudinarysecret = os.Getenv("CLOUDINARY_SECRET")
+}
+
 func (s *service) UploadMedia(ctx context.Context, iFile multipart.File, iHandler *multipart.FileHeader) (string, error) {
+	setKeys()
 	cld, err := cloudinary.NewFromParams(cloudname, cloudapikey, cloudinarysecret)
 	if err != nil {
 		return "", err
@@ -45,7 +53,22 @@ func (s *service) UploadMedia(ctx context.Context, iFile multipart.File, iHandle
 	return resp.URL, nil
 }
 
+func (s *service) UploadByUrl(ctx context.Context, url string) (string, error) {
+	setKeys()
+	cld, err := cloudinary.NewFromParams(cloudname, cloudapikey, cloudinarysecret)
+	if err != nil {
+		return "", err
+	}
+	options := uploader.UploadParams{AllowedFormats: imgType}
+	resp, err := cld.Upload.Upload(ctx, url, options)
+	if err != nil {
+		return "", err
+	}
+	return resp.URL, nil
+}
+
 func (s *service) DeleteMedia(ctx context.Context, url string) error {
+	setKeys()
 	cld, err := cloudinary.NewFromParams(cloudname, cloudapikey, cloudinarysecret)
 	if err != nil {
 		return err
@@ -62,9 +85,15 @@ func (s *service) DeleteMedia(ctx context.Context, url string) error {
 }
 
 func (s *service) GetPublicID(ctx context.Context, url string) (string, error) {
-	firstUrl := strings.Split(url, ".")
-	auxUrl := firstUrl[len(firstUrl)-2]
-	secondUrl := strings.Split(auxUrl, "/")
-	result := secondUrl[len(secondUrl)-1]
+	result := ""
+	auxUrl := ""
+	first := strings.Split(url, "/")
+	if len(first) > 1 {
+		auxUrl = first[len(first)-1]
+	}
+	second := strings.Split(auxUrl, ".")
+	if len(second) > 0 {
+		result = second[0]
+	}
 	return result, nil
 }

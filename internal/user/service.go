@@ -3,11 +3,14 @@ package user
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
 	"github.com/ervera/tdlc-gin/pkg/iso8601"
 	"github.com/ervera/tdlc-gin/pkg/jwt"
+	"github.com/ervera/tdlc-gin/pkg/random"
+	"github.com/ervera/tdlc-gin/pkg/sendgrid"
 	"github.com/google/uuid"
 )
 
@@ -15,16 +18,20 @@ type Service interface {
 	CreateUser(ctx context.Context, user domain.User) (domain.User, error)
 	GetById(ctx context.Context, guid uuid.UUID) (domain.User, error)
 	Update(ctx context.Context, u domain.User) error
+	SendEmailWithPassword(ctx context.Context, email string) error
+	NewPassword(ctx context.Context, password string) error
 	// SaveUserRelation(ctx context.Context, userRelationId string) error
 }
 
 type service struct {
-	repository Repository
+	repository      Repository
+	sendgridService sendgrid.Service
 }
 
-func NewService(r Repository) Service {
+func NewService(r Repository, s sendgrid.Service) Service {
 	return &service{
-		repository: r,
+		repository:      r,
+		sendgridService: s,
 	}
 }
 
@@ -62,6 +69,35 @@ func (s *service) Update(ctx context.Context, u domain.User) error {
 		return errors.New("userId and token not match")
 	}
 	return s.repository.Update(ctx, u)
+}
+
+func (s *service) SendEmailWithPassword(ctx context.Context, email string) error {
+	user, err := s.repository.ExistAndGetByMail(ctx, email)
+	if err != nil {
+		return err
+	}
+	randomPassword := random.GenerateStringByN(6)
+	err = s.repository.UpdatePasswordById(ctx, user, randomPassword)
+	if err != nil {
+		return err
+	}
+	s.sendgridService.SendPassword(ctx, user.FirstName, email, randomPassword)
+	return nil
+}
+
+func (s *service) NewPassword(ctx context.Context, password string) error {
+	user, err := s.repository.ExistAndGetByMail(ctx, jwt.Email)
+	if err != nil {
+		fmt.Println(jwt.Email)
+		fmt.Println("A")
+		return err
+	}
+	err = s.repository.UpdatePasswordById(ctx, user, password)
+	if err != nil {
+		fmt.Println("b")
+		return err
+	}
+	return nil
 }
 
 // func (s *service) SaveUserRelation(ctx context.Context, userRelationId string) error {

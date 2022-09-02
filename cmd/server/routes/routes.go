@@ -39,14 +39,16 @@ func (r *router) setGroup() {
 
 func (r *router) buildUserRoutes() {
 	repoUsers := user.NewRepository(r.db)
-	serviceUsers := user.NewService(repoUsers)
 	serviceMedia := media.NewService()
 	serviceSendgrid := sendgrid.NewService()
-	user := handler.NewHandlerUser(serviceUsers, serviceMedia, serviceSendgrid)
+	serviceUsers := user.NewService(repoUsers, serviceSendgrid)
+	user := handler.NewHandlerUser(serviceUsers, serviceMedia)
 	r.rg.POST("/user", user.CreateUser())
 	r.rg.GET("/user/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
 	r.rg.PATCH("/user", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
-	r.rg.GET("/user/sendmail", user.SendMail())
+	//r.rg.GET("/user/sendmail", user.SendMail())
+	r.rg.POST("/user/forgotpassword", user.ForgotPassword())
+	r.rg.POST("/user/newpassword", middleware.TokenAuthMiddleware(), user.NewPassword())
 	// group := r.rg.Group("/user")
 	// group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
 	// group.POST("/relation/:id", middleware.TokenAuthMiddleware(), user.CreateUserRelation())
@@ -76,8 +78,10 @@ func (r *router) buildUserRoutes() {
 
 func (r *router) buildGoogleRoutes() {
 	repoUser := user.NewRepository(r.db)
-	serviceUser := user.NewService(repoUser)
-	localGoogleService := localGoogle.NewService(repoUser, serviceUser)
+	serviceSendgrid := sendgrid.NewService()
+	serviceUser := user.NewService(repoUser, serviceSendgrid)
+	serviceMedia := media.NewService()
+	localGoogleService := localGoogle.NewService(repoUser, serviceUser, serviceMedia)
 	localGoogle := handler.NewGoogleHandler(localGoogleService)
 
 	group := r.rg.Group("/google")

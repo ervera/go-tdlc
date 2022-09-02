@@ -13,7 +13,6 @@ var UserID uuid.UUID
 var Email string
 
 func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
-	//func ProcessToken(ctx context.Context, db *sql.DB, tk string) (*domain.Claim, bool, string, error) {
 	ID := ""
 
 	myPass := []byte("generate")

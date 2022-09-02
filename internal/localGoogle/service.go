@@ -6,12 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
+	"github.com/ervera/tdlc-gin/internal/media"
 	"github.com/ervera/tdlc-gin/internal/user"
 	"github.com/ervera/tdlc-gin/pkg/jwt"
+	"github.com/ervera/tdlc-gin/pkg/random"
 )
 
 type Service interface {
@@ -21,12 +22,14 @@ type Service interface {
 type service struct {
 	userService    user.Service
 	userRepository user.Repository
+	mediaService   media.Service
 }
 
-func NewService(r user.Repository, s user.Service) Service {
+func NewService(r user.Repository, s user.Service, m media.Service) Service {
 	return &service{
 		userService:    s,
 		userRepository: r,
+		mediaService:   m,
 	}
 }
 
@@ -60,8 +63,10 @@ func (s *service) Login(ctx context.Context, token string) (domain.User, error) 
 		return user, nil
 	}
 
-	_, err = s.userService.CreateUser(ctx, googleUserToUser(googleResp))
+	gUser := s.googleUserToUserAndUploadImage(ctx, googleResp)
+	_, err = s.userService.CreateUser(ctx, gUser)
 	if err != nil {
+		s.mediaService.DeleteMedia(ctx, gUser.Avatar)
 		return domain.User{}, err
 	}
 	user, exist = s.googleLogin(ctx, googleResp.Email)
@@ -94,22 +99,22 @@ func (s *service) googleLogin(ctx context.Context, email string) (domain.User, b
 	return user, true
 }
 
-func googleUserToUser(g domain.GoogleUser) domain.User {
-	return domain.User{
+func (s *service) googleUserToUserAndUploadImage(ctx context.Context, g domain.GoogleUser) domain.User {
+	user := domain.User{
 		FirstName: g.GivenName,
 		LastName:  g.FamilyName,
-		Avatar:    g.Picture,
 		Email:     g.Email,
-		Password:  randStringBytes(7),
+		Password:  random.GenerateStringByN(7),
 	}
-}
-
-// randStringBytes create a random string
-func randStringBytes(n int) string {
-	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	url, err := s.mediaService.UploadByUrl(ctx, g.Picture)
+	if err != nil {
+		user.Avatar = g.Picture
+		return user
 	}
-	return string(b)
+	if url == "" {
+		user.Avatar = g.Picture
+	} else {
+		user.Avatar = url
+	}
+	return user
 }
