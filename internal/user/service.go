@@ -19,6 +19,7 @@ type Service interface {
 	GetById(ctx context.Context, guid uuid.UUID) (domain.User, error)
 	Update(ctx context.Context, u domain.User) error
 	SendEmailWithPassword(ctx context.Context, email string) error
+	NewPassword(ctx context.Context, password string) error
 	// SaveUserRelation(ctx context.Context, userRelationId string) error
 }
 
@@ -75,14 +76,27 @@ func (s *service) SendEmailWithPassword(ctx context.Context, email string) error
 	if err != nil {
 		return err
 	}
-
 	randomPassword := random.GenerateStringByN(6)
-	fmt.Println(user)
-	err = s.repository.UpdatePasswordByEmail(ctx, user, randomPassword)
+	err = s.repository.UpdatePasswordById(ctx, user, randomPassword)
 	if err != nil {
 		return err
 	}
 	s.sendgridService.SendPassword(ctx, user.FirstName, email, randomPassword)
+	return nil
+}
+
+func (s *service) NewPassword(ctx context.Context, password string) error {
+	user, err := s.repository.ExistAndGetByMail(ctx, jwt.Email)
+	if err != nil {
+		fmt.Println(jwt.Email)
+		fmt.Println("A")
+		return err
+	}
+	err = s.repository.UpdatePasswordById(ctx, user, password)
+	if err != nil {
+		fmt.Println("b")
+		return err
+	}
 	return nil
 }
 
