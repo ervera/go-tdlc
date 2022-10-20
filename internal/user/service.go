@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
@@ -20,7 +19,8 @@ type Service interface {
 	Update(ctx context.Context, u domain.User) error
 	SendEmailWithPassword(ctx context.Context, email string) error
 	NewPassword(ctx context.Context, password string) error
-	// SaveUserRelation(ctx context.Context, userRelationId string) error
+	UpdateMedia(ctx context.Context, u domain.User) error
+	DeleteMedia(ctx context.Context, u domain.User, mediaType string) error
 }
 
 type service struct {
@@ -65,10 +65,24 @@ func (s *service) GetById(ctx context.Context, ID uuid.UUID) (domain.User, error
 }
 
 func (s *service) Update(ctx context.Context, u domain.User) error {
-	if jwt.UserID != u.ID {
+	if jwt.UserID != u.UUID {
 		return errors.New("userId and token not match")
 	}
 	return s.repository.Update(ctx, u)
+}
+
+func (s *service) UpdateMedia(ctx context.Context, u domain.User) error {
+	if jwt.UserID != u.UUID {
+		return errors.New("userId and token not match")
+	}
+	return s.repository.UpdateMedia(ctx, u)
+}
+
+func (s *service) DeleteMedia(ctx context.Context, u domain.User, mediaType string) error {
+	if jwt.UserID != u.UUID {
+		return errors.New("userId and token not match")
+	}
+	return s.repository.DeleteUserMedia(ctx, u, mediaType)
 }
 
 func (s *service) SendEmailWithPassword(ctx context.Context, email string) error {
@@ -88,13 +102,10 @@ func (s *service) SendEmailWithPassword(ctx context.Context, email string) error
 func (s *service) NewPassword(ctx context.Context, password string) error {
 	user, err := s.repository.ExistAndGetByMail(ctx, jwt.Email)
 	if err != nil {
-		fmt.Println(jwt.Email)
-		fmt.Println("A")
 		return err
 	}
 	err = s.repository.UpdatePasswordById(ctx, user, password)
 	if err != nil {
-		fmt.Println("b")
 		return err
 	}
 	return nil

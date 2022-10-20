@@ -7,6 +7,7 @@ import (
 	"github.com/ervera/tdlc-gin/internal/localGoogle"
 	"github.com/ervera/tdlc-gin/internal/login"
 	"github.com/ervera/tdlc-gin/internal/media"
+	"github.com/ervera/tdlc-gin/internal/team"
 	"github.com/ervera/tdlc-gin/internal/user"
 	"github.com/ervera/tdlc-gin/pkg/middleware"
 	"github.com/ervera/tdlc-gin/pkg/sendgrid"
@@ -28,6 +29,7 @@ func (r *router) MapRoutes() {
 
 	r.buildGoogleRoutes()
 	r.buildUserRoutes()
+	r.buildTeamRoutes()
 	r.buildLoginRoutes()
 	// r.buildTweetRoutes()
 	// r.buildImageRoutes()
@@ -43,12 +45,32 @@ func (r *router) buildUserRoutes() {
 	serviceSendgrid := sendgrid.NewService()
 	serviceUsers := user.NewService(repoUsers, serviceSendgrid)
 	user := handler.NewHandlerUser(serviceUsers, serviceMedia)
-	r.rg.POST("/user", user.CreateUser())
-	r.rg.GET("/user/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
-	r.rg.PATCH("/user", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
+	// r.rg.POST("/user", user.CreateUser())
+	// r.rg.GET("/user/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
+	// r.rg.PATCH("/user", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
+	// //r.rg.GET("/user/sendmail", user.SendMail())
+	// r.rg.POST("/user/forgotpassword", user.ForgotPassword())
+	// r.rg.POST("/user/newpassword", middleware.TokenAuthMiddleware(), user.NewPassword())
+	// r.rg.PATCH("/user/media/:type", middleware.TokenAuthMiddleware(), user.UpdateMedia())
+	// r.rg.DELETE("/user/media/:type", middleware.TokenAuthMiddleware(), user.DeleteMedia())
+
+	group := r.rg.Group("/user")
+	group.POST("/", user.CreateUser())
+	group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
+	group.PATCH("/", middleware.TokenAuthMiddleware(), user.UpdateSelfUser())
 	//r.rg.GET("/user/sendmail", user.SendMail())
-	r.rg.POST("/user/forgotpassword", user.ForgotPassword())
-	r.rg.POST("/user/newpassword", middleware.TokenAuthMiddleware(), user.NewPassword())
+	group.POST("/forgotpassword", user.ForgotPassword())
+	group.POST("/newpassword", middleware.TokenAuthMiddleware(), user.NewPassword())
+	group.PATCH("/media/:type", middleware.TokenAuthMiddleware(), user.UpdateMedia())
+	group.DELETE("/media/:type", middleware.TokenAuthMiddleware(), user.DeleteMedia())
+}
+
+func (r *router) buildTeamRoutes() {
+	repoTeams := team.NewRepository(r.db)
+	serviceTeam := team.NewService(repoTeams)
+	team := handler.NewTeamHandler(serviceTeam)
+	r.rg.POST("/team", middleware.TokenAuthMiddleware(), team.CreateTeam())
+	r.rg.GET("/team", middleware.TokenAuthMiddleware(), team.GetUserTeam())
 	// group := r.rg.Group("/user")
 	// group.GET("/:id", middleware.TokenAuthMiddleware(), user.GetUserById())
 	// group.POST("/relation/:id", middleware.TokenAuthMiddleware(), user.CreateUserRelation())

@@ -37,7 +37,7 @@ func ProcessToken(tk string) (*domain.Claim, bool, string, error) {
 		return claims, finded, ID, nil*/
 		/***** SIRVE PARA VALIDAR BUSCANDO EN LA BD ****/
 		Email = claims.Email
-		UserID = uuid.Must(uuid.Parse(claims.ID))
+		UserID = uuid.Must(uuid.Parse(claims.UUID))
 		//guid := uuid.Must(uuid.Parse(ctx.Param("id")))
 		return claims, true, ID, nil
 	}

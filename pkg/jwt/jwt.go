@@ -18,6 +18,7 @@ func GenerateJWT(u domain.User) (string, error) {
 		"biography":  u.Biography,
 		"location":   u.Location,
 		"website":    u.Website,
+		"uuid":       u.UUID,
 		"id":         u.ID,
 		"exp":        time.Now().Add(time.Hour * 24).Unix(),
 	}

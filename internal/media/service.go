@@ -45,6 +45,7 @@ func (s *service) UploadMedia(ctx context.Context, iFile multipart.File, iHandle
 	if err != nil {
 		return "", err
 	}
+	//https://res.cloudinary.com/dangvuvyq/image/upload/c_fill,g_auto,h_199,w_800/v1662473607/fmb5w8ya5dgkezanzgx9.png
 	options := uploader.UploadParams{AllowedFormats: imgType}
 	resp, err := cld.Upload.Upload(ctx, iFile, options)
 	if err != nil {
