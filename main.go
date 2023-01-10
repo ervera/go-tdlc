@@ -20,39 +20,22 @@ import (
 )
 
 func main() {
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	fmt.Println("error log")
-	// }
-	// //tkoen := os.Getenv("TOKEN")
-	// db := db.NewConnection()
-	// r := gin.Default()
-	// handler := cors.AllowAll().Handler(r)
-	// router := routes.NewRouter(r, db)
-	// router.MapRoutes()
-	// PORT := os.Getenv("PORT")
-	// if PORT == "" {
-	// 	PORT = "8080"
-	// }
-	// log.Fatal(http.ListenAndServe(":"+PORT, handler))
-
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("error log")
 	}
-	//tkoen := os.Getenv("TOKEN")
+
 	db := db.NewConnection()
+
 	repoUser := user.NewRepository(db)
+	repoTeams := team.NewRepository(db)
+
 	serviceMedia := media.NewService()
 	serviceSendgrid := sendgrid.NewService()
 	serviceUsers := user.NewService(repoUser, serviceSendgrid)
-
 	serviceLogin := login.NewService(repoUser)
-
 	serviceUser := user.NewService(repoUser, serviceSendgrid)
 	localGoogleService := localGoogle.NewService(repoUser, serviceUser, serviceMedia)
-
-	repoTeams := team.NewRepository(db)
 	serviceTeam := team.NewService(repoTeams)
 
 	userHandler := handlers.NewHandlerUser(serviceUsers, serviceMedia)

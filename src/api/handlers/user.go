@@ -95,12 +95,12 @@ func (c *UserHandler) ForgotPassword() gin.HandlerFunc {
 		var email email
 		err := ctx.ShouldBind(&email)
 		if err != nil {
-			web.Error(ctx, 400, err.Error())
+			web.Response(ctx, 200, nil)
 			return
 		}
 		err = c.userService.SendEmailWithPassword(ctx, email.Email)
 		if err != nil {
-			web.Error(ctx, 400, err.Error())
+			web.Response(ctx, 200, nil)
 			return
 		}
 		web.Response(ctx, 200, nil)

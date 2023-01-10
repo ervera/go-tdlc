@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/ervera/tdlc-gin/internal/domain"
@@ -86,6 +87,7 @@ func (s *service) DeleteMedia(ctx context.Context, u domain.User, mediaType stri
 }
 
 func (s *service) SendEmailWithPassword(ctx context.Context, email string) error {
+	fmt.Println(email)
 	user, err := s.repository.ExistAndGetByMail(ctx, email)
 	if err != nil {
 		return err
